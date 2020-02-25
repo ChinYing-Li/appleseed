@@ -34,8 +34,6 @@
 #include "foundation/image/image.h"
 #include "foundation/image/imageattributes.h"
 #include "foundation/image/pixel.h"
-#include "foundation/math/rng/distribution.h"
-#include "foundation/math/rng/mersennetwister.h"
 #include "foundation/math/scalar.h"
 #include "foundation/utility/iostreamop.h"
 #include "foundation/utility/test.h"
