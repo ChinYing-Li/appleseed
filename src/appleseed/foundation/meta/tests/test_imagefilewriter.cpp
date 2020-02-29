@@ -1,3 +1,30 @@
+//
+// This source file is part of appleseed.
+// Visit https://appleseedhq.net/ for additional information and resources.
+//
+// This software is released under the MIT license.
+//
+// Copyright (c) 2019-2020 Chin-Ying Li, The appleseedhq Organization
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
+//
+
 // appleseed.foundation headers.
 #include "foundation/image/color.h"
 #include "foundation/image/colorspace.h"
@@ -20,108 +47,102 @@
 
 using namespace foundation;
 
-/*
-// Default export formats:
-//
-// OpenEXR   .exr          4-channel   16-bit (half)                            Linear
-// RGBE      .hdr          3-channel   32-bit (8-bit RGB + shared exponent)     Linear
-// TIFF      .tiff/.tif    4-channel   16-bit (std::uint16_t)                   Linear
-// BMP       .bmp          4-channel    8-bit (std::uint8_t)                    sRGB
-// PNG       .png          4-channel    8-bit (std::uint8_t)                    sRGB
-// JPEG      .jpg/.jpe/    3-channel    8-bit (std::uint8_t)                    sRGB
-//           .jpeg/.jif/
-//           .jfif/.jfi
-*/
-
 TEST_SUITE(Foundation_Image_ImageFileWriter)
 {
-    bool write_image(const std::string ImageFilePath)
+    template< typename Color >
+    void TestWriteImage( const Color fill_color, const size_t s, const std::string image_file_path )
     {
-        const std::string FileExtension = ImageFilePath.substr(ImageFilePath.find_last_of("."));
-    
-        Image image(16, 16, 16, 16, 4, PixelFormatUInt8); 
-        image.clear(Color4b(50, 100, 150, 42));
+        size_t channels = fill_color.Components;
         
-        GenericImageFileWriter writer(ImageFilePath.c_str());
-        writer.append_image(&image);
-        writer.write();
-                        
-        return true;
-    }
-    
-    bool read_and_compare_RGBA(const std::string ImageFilePath)
-    {
+        const std::string file_extension = image_file_path.substr(image_file_path.find_last_of("."));
         
-        const std::string FileExtension = ImageFilePath.substr(ImageFilePath.find_last_of("."));
+        std::unique_ptr<Image> image( new Image( s, s, s, s, channels, PixelFormatUInt8) );
         
-        GenericImageFileReader reader;
-        std::unique_ptr<Image> image(reader.read(ImageFilePath.c_str()));
-        
-        for (size_t y = 0; y < 16; ++y)
+        if ( file_extension == "hdr" )
         {
-            for (size_t x = 0; x < 16; ++x)
-            {
-                Color4b c;
-                image->get_pixel(x, y, c);
-                if(Color4b(50, 100, 150, 42) != c) return false;
-            }
+            image.reset( new Image( s, s, s, s, channels, PixelFormatUInt16) ); // hdr image format supports PixelFormatUInt16
         }
         
-        return true;
+        image->clear(fill_color);
+        
+        GenericImageFileWriter writer(image_file_path.c_str());
+        writer.append_image(image.get());
+        writer.write();
     }
-                        
     
     TEST_CASE(WriteBMP_CorrectlyWritesImagePixels)
     {
-        const std::string ImageFilePath = "unit tests/outputs/test_imagefilewriter.bmp";
+        const std::string image_file_path = "unit tests/outputs/test_imagefilewriter.bmp";
+        const size_t s = 16;
+        const Color4b fill_color(50, 100, 150, 42);
                 
         {
-            EXPECT_TRUE(write_image(ImageFilePath));
+            TestWriteImage<Color4b>(fill_color, s, image_file_path);
         }
         
         {
-            EXPECT_TRUE(read_and_compare_RGBA(ImageFilePath));
+            GenericImageFileReader reader;
+            std::unique_ptr<Image> image(reader.read(image_file_path.c_str()));
+            
+            for (size_t y = 0; y < s; ++y)
+            {
+                for (size_t x = 0; x < s; ++x)
+                {
+                        Color4b c;
+                        image->get_pixel(x, y, c);
+                        EXPECT_EQ(fill_color, c);
+                }
+            }
         }
     }
     
     TEST_CASE(WriteEXR_CorrectlyWritesImagePixels)
     {
-        const std::string ImageFilePath = "unit tests/outputs/test_imagefilewriter.exr";
+        const std::string image_file_path = "unit tests/outputs/test_imagefilewriter.exr";
+        const size_t s = 16;
+        const Color4b fill_color(50, 100, 150, 42);
+                        
+        {
+            TestWriteImage<Color4b>(fill_color, s, image_file_path);
+        }
                 
         {
-            EXPECT_TRUE(write_image(ImageFilePath));
-        }
-        
-        {
-            EXPECT_TRUE(read_and_compare_RGBA(ImageFilePath));
+            GenericImageFileReader reader;
+            std::unique_ptr<Image> image(reader.read(image_file_path.c_str()));
+                    
+            for (size_t y = 0; y < s; ++y)
+            {
+                for (size_t x = 0; x < s; ++x)
+                {
+                    Color4b c;
+                    image->get_pixel(x, y, c);
+                    EXPECT_EQ(fill_color, c);
+                }
+            }
         }
     }
     
     TEST_CASE(WriteHDR_CorrectlyWritesImagePixels)
     {
-        const std::string ImageFilePath = "unit tests/outputs/test_imagefilewriter.hdr";
-        
+        const std::string image_file_path = "unit tests/outputs/test_imagefilewriter.hdr";
+        const size_t s = 16;
+        const Color3b fill_color(50, 100, 150);
+                
         {
-            Image image(2, 2, 2, 2, 3, PixelFormatUInt16);
-            
-            image.clear(Color3b(50, 100, 150));
-            
-            GenericImageFileWriter writer(ImageFilePath.c_str());
-            writer.append_image(&image);
-            writer.write();
+            TestWriteImage<Color3b>(fill_color, s, image_file_path);
         }
         
         {
             GenericImageFileReader reader;
-            std::unique_ptr<Image> image(reader.read(ImageFilePath.c_str()));
-
-            for (size_t y = 0; y < 2; ++y)
+            std::unique_ptr<Image> image(reader.read(image_file_path.c_str()));
+            
+            for (size_t y = 0; y < s; ++y)
             {
-                for (size_t x = 0; x < 2; ++x)
+                for (size_t x = 0; x < s; ++x)
                 {
-                    Color3b c;
-                    image->get_pixel(x, y, c);
-                    EXPECT_EQ(Color3b(50, 100, 150), c);
+                        Color3b c;
+                        image->get_pixel(x, y, c);
+                        EXPECT_EQ(fill_color, c);
                 }
             }
         }
@@ -129,91 +150,83 @@ TEST_SUITE(Foundation_Image_ImageFileWriter)
     
     TEST_CASE(WriteJPG_ApproximatelyWritesImagePixels)
     {
-        const std::string ImageFilePath = "unit tests/outputs/test_imagefilewriter.jpg";
-        
+        const std::string image_file_path = "unit tests/outputs/test_imagefilewriter.jpg";
+        const size_t s = 16;
+        const Color3b fill_color(50, 100, 150);
+                
         {
-            Image image(2, 2, 2, 2, 3, PixelFormatUInt8);
-            
-            image.clear(Color3b(50, 100, 150));
-            
-            GenericImageFileWriter writer(ImageFilePath.c_str());
-            writer.append_image(&image);
-            writer.write();
+            TestWriteImage<Color3b>(fill_color, s, image_file_path);
         }
         
         {
             GenericImageFileReader reader;
-            std::unique_ptr<Image> image(reader.read(ImageFilePath.c_str()));
+            std::unique_ptr<Image> image(reader.read(image_file_path.c_str()));
             
-            Color3b expected_c(50, 100, 150);
-            
-            for (size_t y = 0; y < 2; ++y)
+            for (size_t y = 0; y < s; ++y)
             {
-                for (size_t x = 0; x < 2; ++x)
+                for (size_t x = 0; x < s; ++x)
                 {
                     Color3b c;
                     image->get_pixel(x, y, c);
-                    
                     for (size_t i = 0; i < 3; ++i)
                     {
-                        if (std::abs(c[i] - expected_c[i]) > 1)
-                        {
-                            EXPECT_EQ(c, expected_c);
-                        }
+                        EXPECT_TRUE((c[i]-fill_color[i]) < 2 || (fill_color[i] - c[i]) < 2);
                     }
                 }
             }
         }
     }
     
-    /*
-    // Test case for PNG is still not working.
-    //
+    // Test case for PNG does not work. see PR #2779 for more details.
     TEST_CASE(WritePNG_CorrectlyWritesImagePixels)
     {
-        const std::string ImageFilePath = "unit tests/outputs/test_imagefilewriter.png";
+        const std::string image_file_path = "unit tests/outputs/test_imagefilewriter.png";
+        const size_t s = 16;
+        const Color4b fill_color(50, 100, 150, 42);
                 
         {
-            Image image(2, 2, 2, 2, 4, PixelFormatUInt8);
-            
-            image.clear(Color4b(50, 100, 150, 42));
-            
-            GenericImageFileWriter writer(ImageFilePath.c_str());
-            writer.append_image(&image);
-            writer.write();
+            TestWriteImage<Color4b>(fill_color, s, image_file_path);
         }
         
         {
             GenericImageFileReader reader;
-            std::unique_ptr<Image> image(reader.read(ImageFilePath.c_str()));
+            std::unique_ptr<Image> image(reader.read(image_file_path.c_str()));
             
-            Color4b expected_c(50, 100, 150, 42);
-            
-            for (size_t y = 0; y < 2; ++y)
+            for (size_t y = 0; y < s; ++y)
             {
-                for (size_t x = 0; x < 2; ++x)
+                for (size_t x = 0; x < s; ++x)
                 {
-                    Color4b c;
-                    image->get_pixel(x, y, c);
-                    
-                    EXPECT_EQ(c, expected_c);
-                    }
+                        Color4b c;
+                        image->get_pixel(x, y, c);
+                        EXPECT_EQ(fill_color, c);
                 }
             }
         }
     }
-     */
     
     TEST_CASE(WriteTIFF_CorrectlyWritesImagePixels)
     {
-        const std::string ImageFilePath = "unit tests/outputs/test_imagefilewriter.tif";
+        const std::string image_file_path = "unit tests/outputs/test_imagefilewriter.tif";
+        const size_t s = 16;
+        const Color4b fill_color(50, 100, 150, 42);
+                        
+        {
+            TestWriteImage<Color4b>(fill_color, s, image_file_path);
+        }
                 
         {
-            EXPECT_TRUE(write_image(ImageFilePath));
-        }
-        
-        {
-            EXPECT_TRUE(read_and_compare_RGBA(ImageFilePath));
+            GenericImageFileReader reader;
+            std::unique_ptr<Image> image(reader.read(image_file_path.c_str()));
+                    
+            for (size_t y = 0; y < s; ++y)
+            {
+                for (size_t x = 0; x < s; ++x)
+                {
+                    Color4b c;
+                    image->get_pixel(x, y, c);
+                    EXPECT_EQ(fill_color, c);
+                }
+            }
         }
     }
 }
