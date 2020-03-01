@@ -50,7 +50,7 @@ using namespace foundation;
 TEST_SUITE(Foundation_Image_ImageFileWriter)
 {
     template< typename Color >
-    void TestWriteImage( const Color fill_color, const size_t s, const std::string image_file_path )
+    void test_write_image( const Color fill_color, const size_t s, const std::string image_file_path )
     {
         size_t channels = fill_color.Components;
         
@@ -77,7 +77,7 @@ TEST_SUITE(Foundation_Image_ImageFileWriter)
         const Color4b fill_color(50, 100, 150, 42);
                 
         {
-            TestWriteImage<Color4b>(fill_color, s, image_file_path);
+            test_write_image<Color4b>(fill_color, s, image_file_path);
         }
         
         {
@@ -103,7 +103,7 @@ TEST_SUITE(Foundation_Image_ImageFileWriter)
         const Color4b fill_color(50, 100, 150, 42);
                         
         {
-            TestWriteImage<Color4b>(fill_color, s, image_file_path);
+            test_write_image<Color4b>(fill_color, s, image_file_path);
         }
                 
         {
@@ -129,7 +129,7 @@ TEST_SUITE(Foundation_Image_ImageFileWriter)
         const Color3b fill_color(50, 100, 150);
                 
         {
-            TestWriteImage<Color3b>(fill_color, s, image_file_path);
+            test_write_image<Color3b>(fill_color, s, image_file_path);
         }
         
         {
@@ -155,7 +155,7 @@ TEST_SUITE(Foundation_Image_ImageFileWriter)
         const Color3b fill_color(50, 100, 150);
                 
         {
-            TestWriteImage<Color3b>(fill_color, s, image_file_path);
+            test_write_image<Color3b>(fill_color, s, image_file_path);
         }
         
         {
@@ -185,7 +185,7 @@ TEST_SUITE(Foundation_Image_ImageFileWriter)
         const Color4b fill_color(50, 100, 150, 42);
                 
         {
-            TestWriteImage<Color4b>(fill_color, s, image_file_path);
+            test_write_image<Color4b>(fill_color, s, image_file_path);
         }
         
         {
@@ -211,7 +211,7 @@ TEST_SUITE(Foundation_Image_ImageFileWriter)
         const Color4b fill_color(50, 100, 150, 42);
                         
         {
-            TestWriteImage<Color4b>(fill_color, s, image_file_path);
+            test_write_image<Color4b>(fill_color, s, image_file_path);
         }
                 
         {
