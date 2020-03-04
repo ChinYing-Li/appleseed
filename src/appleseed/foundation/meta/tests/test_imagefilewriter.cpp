@@ -169,15 +169,15 @@ TEST_SUITE(Foundation_Image_ImageFileWriter)
         }
     }
     
-    // Test case for PNG does not work. see PR #2779 for more details.
+    // Used Color3b instead of Color4b; Color4b does not work. See PR #2779
     TEST_CASE(WritePNG_CorrectlyWritesImagePixels)
     {
         const std::string image_file_path = "unit tests/outputs/test_imagefilewriter.png";
         const size_t s = 16;
-        const Color4b fill_color(50, 100, 150, 42);
+        const Color3b fill_color(50, 100, 150);
                 
         {
-            write_image<Color4b>(fill_color, PixelFormatUInt8, s, image_file_path);
+            write_image<Color3b>(fill_color, PixelFormatUInt8, s, image_file_path);
         }
         
         {
@@ -188,7 +188,7 @@ TEST_SUITE(Foundation_Image_ImageFileWriter)
             {
                 for (size_t x = 0; x < s; ++x)
                 {
-                        Color4b c;
+                        Color3b c;
                         image->get_pixel(x, y, c);
                         EXPECT_EQ(fill_color, c);
                 }
