@@ -49,20 +49,12 @@ using namespace foundation;
 
 TEST_SUITE(Foundation_Image_ImageFileWriter)
 {
-    template< typename Color >
-    void test_write_image( const Color fill_color, const size_t s, const std::string image_file_path )
+    template<typename Color>
+    void write_image(const Color fill_color, const PixelFormat pixel_format, const size_t s, const std::string image_file_path)
     {
         size_t channels = fill_color.Components;
         
-        const std::string file_extension = image_file_path.substr(image_file_path.find_last_of("."));
-        
-        std::unique_ptr<Image> image( new Image( s, s, s, s, channels, PixelFormatUInt8) );
-        
-        if ( file_extension == "hdr" )
-        {
-            image.reset( new Image( s, s, s, s, channels, PixelFormatUInt16) ); // hdr image format supports PixelFormatUInt16
-        }
-        
+        std::unique_ptr<Image> image(new Image( s, s, s, s, channels, pixel_format) );
         image->clear(fill_color);
         
         GenericImageFileWriter writer(image_file_path.c_str());
@@ -77,7 +69,7 @@ TEST_SUITE(Foundation_Image_ImageFileWriter)
         const Color4b fill_color(50, 100, 150, 42);
                 
         {
-            test_write_image<Color4b>(fill_color, s, image_file_path);
+            write_image<Color4b>(fill_color, PixelFormatUInt8, s, image_file_path);
         }
         
         {
@@ -88,9 +80,9 @@ TEST_SUITE(Foundation_Image_ImageFileWriter)
             {
                 for (size_t x = 0; x < s; ++x)
                 {
-                        Color4b c;
-                        image->get_pixel(x, y, c);
-                        EXPECT_EQ(fill_color, c);
+                    Color4b c;
+                    image->get_pixel(x, y, c);
+                    EXPECT_EQ(fill_color, c);
                 }
             }
         }
@@ -103,7 +95,7 @@ TEST_SUITE(Foundation_Image_ImageFileWriter)
         const Color4b fill_color(50, 100, 150, 42);
                         
         {
-            test_write_image<Color4b>(fill_color, s, image_file_path);
+            write_image<Color4b>(fill_color, PixelFormatUInt8, s, image_file_path);
         }
                 
         {
@@ -129,7 +121,7 @@ TEST_SUITE(Foundation_Image_ImageFileWriter)
         const Color3b fill_color(50, 100, 150);
                 
         {
-            test_write_image<Color3b>(fill_color, s, image_file_path);
+            write_image<Color3b>(fill_color, PixelFormatUInt16, s, image_file_path);
         }
         
         {
@@ -140,9 +132,9 @@ TEST_SUITE(Foundation_Image_ImageFileWriter)
             {
                 for (size_t x = 0; x < s; ++x)
                 {
-                        Color3b c;
-                        image->get_pixel(x, y, c);
-                        EXPECT_EQ(fill_color, c);
+                    Color3b c;
+                    image->get_pixel(x, y, c);
+                    EXPECT_EQ(fill_color, c);
                 }
             }
         }
@@ -155,7 +147,7 @@ TEST_SUITE(Foundation_Image_ImageFileWriter)
         const Color3b fill_color(50, 100, 150);
                 
         {
-            test_write_image<Color3b>(fill_color, s, image_file_path);
+            write_image<Color3b>(fill_color, PixelFormatUInt8, s, image_file_path);
         }
         
         {
@@ -185,7 +177,7 @@ TEST_SUITE(Foundation_Image_ImageFileWriter)
         const Color4b fill_color(50, 100, 150, 42);
                 
         {
-            test_write_image<Color4b>(fill_color, s, image_file_path);
+            write_image<Color4b>(fill_color, PixelFormatUInt8, s, image_file_path);
         }
         
         {
@@ -211,7 +203,7 @@ TEST_SUITE(Foundation_Image_ImageFileWriter)
         const Color4b fill_color(50, 100, 150, 42);
                         
         {
-            test_write_image<Color4b>(fill_color, s, image_file_path);
+            write_image<Color4b>(fill_color, PixelFormatUInt8, s, image_file_path);
         }
                 
         {
