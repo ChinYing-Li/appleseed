@@ -151,7 +151,6 @@ TEST_SUITE(Foundation_Image_ImageFileWriter)
         }
     }
     
-    // Used Color3b instead of Color4b; Color4b does not work. See PR #2779
     TEST_CASE(WritePNG_CorrectlyWritesImagePixels)
     {
         const std::string image_file_path = "unit tests/outputs/test_imagefilewriter.png";
