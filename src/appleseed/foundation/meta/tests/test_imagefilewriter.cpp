@@ -54,7 +54,7 @@ TEST_SUITE(Foundation_Image_ImageFileWriter)
     {
         size_t channels = fill_color.Components;
         
-        std::unique_ptr<Image> image(new Image( s, s, s, s, channels, pixel_format) );
+        std::unique_ptr<Image> image(new Image(s, s, s, s, channels, pixel_format));
         image->clear(fill_color);
         
         GenericImageFileWriter writer(image_file_path.c_str());
@@ -67,23 +67,19 @@ TEST_SUITE(Foundation_Image_ImageFileWriter)
         const std::string image_file_path = "unit tests/outputs/test_imagefilewriter.bmp";
         const size_t s = 16;
         const Color4b fill_color(50, 100, 150, 42);
-                
-        {
-            write_image<Color4b>(fill_color, PixelFormatUInt8, s, image_file_path);
-        }
         
-        {
-            GenericImageFileReader reader;
-            std::unique_ptr<Image> image(reader.read(image_file_path.c_str()));
+        write_image<Color4b>(fill_color, PixelFormatUInt8, s, image_file_path);
+
+        GenericImageFileReader reader;
+        std::unique_ptr<Image> image(reader.read(image_file_path.c_str()));
             
-            for (size_t y = 0; y < s; ++y)
+        for (size_t y = 0; y < s; ++y)
+        {
+            for (size_t x = 0; x < s; ++x)
             {
-                for (size_t x = 0; x < s; ++x)
-                {
-                    Color4b c;
-                    image->get_pixel(x, y, c);
-                    EXPECT_EQ(fill_color, c);
-                }
+                Color4b c;
+                image->get_pixel(x, y, c);
+                EXPECT_EQ(fill_color, c);
             }
         }
     }
@@ -94,22 +90,18 @@ TEST_SUITE(Foundation_Image_ImageFileWriter)
         const size_t s = 16;
         const Color4b fill_color(50, 100, 150, 42);
                         
+        write_image<Color4b>(fill_color, PixelFormatUInt8, s, image_file_path);
+
+        GenericImageFileReader reader;
+        std::unique_ptr<Image> image(reader.read(image_file_path.c_str()));
+            
+        for (size_t y = 0; y < s; ++y)
         {
-            write_image<Color4b>(fill_color, PixelFormatUInt8, s, image_file_path);
-        }
-                
-        {
-            GenericImageFileReader reader;
-            std::unique_ptr<Image> image(reader.read(image_file_path.c_str()));
-                    
-            for (size_t y = 0; y < s; ++y)
+            for (size_t x = 0; x < s; ++x)
             {
-                for (size_t x = 0; x < s; ++x)
-                {
-                    Color4b c;
-                    image->get_pixel(x, y, c);
-                    EXPECT_EQ(fill_color, c);
-                }
+                Color4b c;
+                image->get_pixel(x, y, c);
+                EXPECT_EQ(fill_color, c);
             }
         }
     }
@@ -120,22 +112,18 @@ TEST_SUITE(Foundation_Image_ImageFileWriter)
         const size_t s = 16;
         const Color3b fill_color(50, 100, 150);
                 
-        {
-            write_image<Color3b>(fill_color, PixelFormatUInt16, s, image_file_path);
-        }
-        
-        {
-            GenericImageFileReader reader;
-            std::unique_ptr<Image> image(reader.read(image_file_path.c_str()));
+        write_image<Color4b>(fill_color, PixelFormatUInt8, s, image_file_path);
+
+        GenericImageFileReader reader;
+        std::unique_ptr<Image> image(reader.read(image_file_path.c_str()));
             
-            for (size_t y = 0; y < s; ++y)
+        for (size_t y = 0; y < s; ++y)
+        {
+            for (size_t x = 0; x < s; ++x)
             {
-                for (size_t x = 0; x < s; ++x)
-                {
-                    Color3b c;
-                    image->get_pixel(x, y, c);
-                    EXPECT_EQ(fill_color, c);
-                }
+                Color4b c;
+                image->get_pixel(x, y, c);
+                EXPECT_EQ(fill_color, c);
             }
         }
     }
@@ -146,25 +134,19 @@ TEST_SUITE(Foundation_Image_ImageFileWriter)
         const size_t s = 16;
         const Color3b fill_color(50, 100, 150);
                 
-        {
-            write_image<Color3b>(fill_color, PixelFormatUInt8, s, image_file_path);
-        }
-        
-        {
-            GenericImageFileReader reader;
-            std::unique_ptr<Image> image(reader.read(image_file_path.c_str()));
+        write_image<Color3b>(fill_color, PixelFormatUInt8, s, image_file_path);
+
+        GenericImageFileReader reader;
+        std::unique_ptr<Image> image(reader.read(image_file_path.c_str()));
             
-            for (size_t y = 0; y < s; ++y)
+        for (size_t y = 0; y < s; ++y)
+        {
+            for (size_t x = 0; x < s; ++x)
             {
-                for (size_t x = 0; x < s; ++x)
-                {
-                    Color3b c;
-                    image->get_pixel(x, y, c);
-                    for (size_t i = 0; i < 3; ++i)
-                    {
-                        EXPECT_TRUE((c[i]-fill_color[i]) < 2 || (fill_color[i] - c[i]) < 2);
-                    }
-                }
+                Color3b c;
+                image->get_pixel(x, y, c);
+                
+                EXPECT_TRUE((c[i]-fill_color[i]) < 2 || (fill_color[i] - c[i]) < 2);
             }
         }
     }
@@ -176,22 +158,18 @@ TEST_SUITE(Foundation_Image_ImageFileWriter)
         const size_t s = 16;
         const Color3b fill_color(50, 100, 150);
                 
-        {
-            write_image<Color3b>(fill_color, PixelFormatUInt8, s, image_file_path);
-        }
-        
-        {
-            GenericImageFileReader reader;
-            std::unique_ptr<Image> image(reader.read(image_file_path.c_str()));
+        write_image<Color4b>(fill_color, PixelFormatUInt8, s, image_file_path);
+
+        GenericImageFileReader reader;
+        std::unique_ptr<Image> image(reader.read(image_file_path.c_str()));
             
-            for (size_t y = 0; y < s; ++y)
+        for (size_t y = 0; y < s; ++y)
+        {
+            for (size_t x = 0; x < s; ++x)
             {
-                for (size_t x = 0; x < s; ++x)
-                {
-                        Color3b c;
-                        image->get_pixel(x, y, c);
-                        EXPECT_EQ(fill_color, c);
-                }
+                Color4b c;
+                image->get_pixel(x, y, c);
+                EXPECT_EQ(fill_color, c);
             }
         }
     }
@@ -202,22 +180,18 @@ TEST_SUITE(Foundation_Image_ImageFileWriter)
         const size_t s = 16;
         const Color4b fill_color(50, 100, 150, 42);
                         
+        write_image<Color4b>(fill_color, PixelFormatUInt8, s, image_file_path);
+
+        GenericImageFileReader reader;
+        std::unique_ptr<Image> image(reader.read(image_file_path.c_str()));
+            
+        for (size_t y = 0; y < s; ++y)
         {
-            write_image<Color4b>(fill_color, PixelFormatUInt8, s, image_file_path);
-        }
-                
-        {
-            GenericImageFileReader reader;
-            std::unique_ptr<Image> image(reader.read(image_file_path.c_str()));
-                    
-            for (size_t y = 0; y < s; ++y)
+            for (size_t x = 0; x < s; ++x)
             {
-                for (size_t x = 0; x < s; ++x)
-                {
-                    Color4b c;
-                    image->get_pixel(x, y, c);
-                    EXPECT_EQ(fill_color, c);
-                }
+                Color4b c;
+                image->get_pixel(x, y, c);
+                EXPECT_EQ(fill_color, c);
             }
         }
     }
